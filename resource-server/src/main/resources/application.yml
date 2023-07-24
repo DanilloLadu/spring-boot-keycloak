@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: resource-server
+  main:
+    banner-mode: console
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:6060/auth/realms/spring-boot #keycloak instance
+          jwk-set-uri: http://localhost:6060/auth/realms/spring-boot/protocol/openid-connect/certs
+
+logging:
+  level:
+#    root: WARN
+    root: DEBUG
+    org:
+      springframework:
+        security: DEBUG
+      hibernate:
+        SQL: TRACE
+        jdbc:
+          bind: TRACE
+
