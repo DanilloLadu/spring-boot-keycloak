@@ -1,10 +1,17 @@
 version: '3.8'
 
+networks:
+  intern:
+
 services:
   #Database
   mysql_db:
     image: mysql:8.0
     container_name: mysql
+    logging:
+      driver: fluentd
+    networks:
+      - intern
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
     environment:
@@ -20,6 +27,10 @@ services:
   #Database client
   adminer:
     image: adminer:4.8.1
+    logging:
+      driver: fluentd
+    networks:
+      - intern
     container_name: adminer
     restart: unless-stopped
     environment:
@@ -38,6 +49,10 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.1
     container_name: keycloak
+    logging:
+      driver: fluentd
+    networks:
+      - intern
     command:
       - start-dev
       - --import-realm
@@ -49,6 +64,21 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8085:8080"
+
+#FluentD
+  fluentd:
+    container_name: fluentd
+    networks:
+      - intern
+    user: root
+    image: fluent/fluentd:v1.16-debian
+    volumes:
+      - ./docker/fluentd/fluent.conf:/fluentd/etc/fluent.conf
+    ports:
+      - "24224:24224"
+    logging:
+      driver: "local"
+
 
 volumes:
   mysql_db_data:
